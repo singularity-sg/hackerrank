@@ -18,23 +18,25 @@ def readData():
     global stocks
     try:
         with open('stock.txt','r+') as stocks_file:
-        for line in stocks_file:
-     stock_prices = [] 
-            temp = line.split() 
-     stock_prices.append([float(i) for i in temp[1:]])
-            stocks[temp[0]] = stock_prices
+            for line in stocks_file:
+                stock_prices = [] 
+                temp = line.split() 
+                stock_prices.append([float(i) for i in temp[1:]])
+                stocks[temp[0]] = stock_prices
     except EnvironmentError:
+        stocks_file.write("")
 
 def writeData():
     global stocks
     try:
-        with open('stock.txt','w') as stocks_file:
-        for stock,prices in stocks.iteritems():
-            stocks_file.write(stock + ' ')
-            for price in prices:
-                stocks_file.write(price + ' ')
-            stocks_file.write('\n')
+        with open('stock.txt','w+') as stocks_file:
+            for stock,prices in stocks.iteritems():
+                stocks_file.write(stock + ' ')
+                for price in prices:
+                    stocks_file.write(price + ' ')
+                stocks_file.write('\n')
     except EnvironmentError:
+        f = open('stock.txt')
 
 def calculate_oscillation(name, prices):
     global stocks_oscillation
