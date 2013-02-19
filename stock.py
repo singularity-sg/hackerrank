@@ -17,18 +17,18 @@ stocks_sold = []
 def readData():
     global stocks
     try:
-        with open('stock.txt','r+') as stocks_file
+        with open('stock.txt','r+') as stocks_file:
         for line in stocks_file:
-	    stock_prices = [] 
+     stock_prices = [] 
             temp = line.split() 
-	    stock_prices.append([float(i) for i in temp[1:]])
+     stock_prices.append([float(i) for i in temp[1:]])
             stocks[temp[0]] = stock_prices
     except EnvironmentError:
 
 def writeData():
     global stocks
     try:
-        with open('stock.txt','w') as stocks_file
+        with open('stock.txt','w') as stocks_file:
         for stock,prices in stocks.iteritems():
             stocks_file.write(stock + ' ')
             for price in prices:
@@ -46,7 +46,7 @@ def calculate_oscillation(name, prices):
         
         change = prices[i] - prices[i-1]
         tmp = change / prices[i-1] 
-	oscillation = oscillation + tmp
+    oscillation = oscillation + tmp
     
     stocks_oscillation[name] = oscillation
 
@@ -66,9 +66,9 @@ def sell_stocks(name, owned):
     
     for i in xrange(0, len(name)):
         n = name[i]
-	o = owned[i]
+        o = owned[i]
         osc = stocks_oscillation[n]
-	if osc < 0:
+    if osc < 0:
             stocks_sold.append((n,o))
 
 def select_stocks(money):
@@ -84,21 +84,21 @@ def select_stocks(money):
     for i in xrange(0, len(sorted_stocks_oscillation)):
         if i > 4:
             break
-	name = sorted_stocks_oscillation[i][0]
-	osc = sorted_stocks_oscillation[i][1]
-	price = stocks[name][-1]
-	if osc > 0:
-            purchase_stock.append((name,price))
+        name = sorted_stocks_oscillation[i][0]
+        osc = sorted_stocks_oscillation[i][1]
+        price = stocks[name][-1]
+    if osc > 0:
+        purchase_stock.append((name,price))
     
     no_of_stocks = len(purchase_stock)
     stock_proportion = proportion[no_of_stocks]
     
     for i in xrange(0, no_of_stocks):
         stock_name = purchase_stock[i][0]
-	price = purchase_stock[i][1]
+        price = purchase_stock[i][1]
         invest_amt = money * stock_proportion[i]
         no_of_stocks_invest = math.floor(invest_amt / price)
-	stocks_purchased.append((stock_name, no_of_stocks_invest))
+        stocks_purchased.append((stock_name, no_of_stocks_invest))
 
 def printTransaction():
     global stocks_purchased
