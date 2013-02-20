@@ -1,5 +1,6 @@
 #!/usr/bin/py
 
+import math
 from operator import itemgetter
 
 # A dictionary with k=stock name and v=list of stock prices
@@ -24,8 +25,9 @@ def readData():
                 stock_prices.append([float(i) for i in temp[1:]])
                 stocks[temp[0]] = stock_prices
     except EnvironmentError:
-        stocks_file.write("")
+        f = open('stock.txt','w+')
 
+        
 def writeData():
     global stocks
     try:
@@ -33,7 +35,7 @@ def writeData():
             for stock,prices in stocks.iteritems():
                 stocks_file.write(stock + ' ')
                 for price in prices:
-                    stocks_file.write(price + ' ')
+                    stocks_file.write(str(price) + ' ')
                 stocks_file.write('\n')
     except EnvironmentError:
         f = open('stock.txt')
@@ -45,7 +47,6 @@ def calculate_oscillation(name, prices):
     for i in xrange(0, len(prices)):
         if i == 1:
             continue
-        
         change = prices[i] - prices[i-1]
         tmp = change / prices[i-1] 
     oscillation = oscillation + tmp
@@ -57,8 +58,8 @@ def analyse(money, name, owned):
     global stocks_oscillation
 
     for n in name:
-        prices = stocks[n]
-        calculate_oscillation(n, prices)
+        price = stocks[n]
+        calculate_oscillation(n, price)
 
     sell_stocks(name, owned)
     select_stocks(money)
@@ -70,8 +71,8 @@ def sell_stocks(name, owned):
         n = name[i]
         o = owned[i]
         osc = stocks_oscillation[n]
-    if osc < 0:
-            stocks_sold.append((n,o))
+    if osc < 0 and o > 0:
+        stocks_sold.append((n,o))
 
 def select_stocks(money):
     global stocks
@@ -79,28 +80,37 @@ def select_stocks(money):
     global stocks_oscillation
 
     proportion = {1:[1.0], 2:[0.7,0.3], 3:[0.5,0.3,0.2], 4:[0.4,0.3,0.2,0.1]}
-    sorted_stocks_oscillation = sorted(stocks_oscillation.iteritems(), key = operator.itemgetter(1), reverse=True)
-    
+    sorted_stocks_oscillation = sorted(stocks_oscillation.iteritems(), key = itemgetter(1), reverse=True)
+   
+    #print "Stock oscillation : {0}".format(sorted_stocks_oscillation)
+
     purchase_stock = []
 
     for i in xrange(0, len(sorted_stocks_oscillation)):
-        if i > 4:
+        if i > 3:
             break
         name = sorted_stocks_oscillation[i][0]
         osc = sorted_stocks_oscillation[i][1]
         price = stocks[name][-1]
-    if osc > 0:
-        purchase_stock.append((name,price))
-    
+        if osc > 0:
+            purchase_stock.append((name,price))
+   
+    #print "Purchase Stock : {0}".format(purchase_stock)
     no_of_stocks = len(purchase_stock)
     stock_proportion = proportion[no_of_stocks]
-    
+   
+    money_left = money
     for i in xrange(0, no_of_stocks):
         stock_name = purchase_stock[i][0]
         price = purchase_stock[i][1]
-        invest_amt = money * stock_proportion[i]
-        no_of_stocks_invest = math.floor(invest_amt / price)
-        stocks_purchased.append((stock_name, no_of_stocks_invest))
+        
+	if price > money_left:
+            continue
+
+        no_of_stocks_invest = math.floor(money_left / price)
+	if no_of_stocks_invest > 0:
+            stocks_purchased.append((stock_name, no_of_stocks_invest))
+	    money_left = money_left - (no_of_stocks_invest * price)
 
 def printTransaction():
     global stocks_purchased
@@ -109,12 +119,14 @@ def printTransaction():
     k = len(stocks_purchased) + len(stocks_sold)
 
     print k
+    #print "Stock purchased : {0}".format(stocks_purchased)
+    #print "Stock sold : {0}".format(stocks_sold)
     
     for stock in stocks_purchased:
-        print stock[0] + ' BUY ' + stock[1]
+        print stock[0] + ' BUY ' + str(stock[1])
     
     for stock in stocks_sold:
-        print stock[0] + ' SELL ' + stock[1]
+        print stock[0] + ' SELL ' + str(stock[1])
 
 # Head ends here
 
@@ -130,9 +142,10 @@ def process(m, k, d, name, owned, prices):
     readData()
     for i in xrange(0, k):
         stock_name = name[i]
-        stock_owned = owned[i] 
-        if stock_name in stocks:
-            stocks[stock_name].append(prices[i][-1])
+        stock_owned = owned[i]
+	stock_prices = prices[i]
+	#print "Stock name : {0} , Stock owned : {1}, Stock prices : {2}".format(stock_name, stock_owned, stock_prices)
+        stocks[stock_name] = stock_prices
     analyse(m, name, owned) 
     writeData()
 
