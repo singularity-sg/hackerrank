@@ -1,0 +1,14 @@
+#!/usr/bin/python
+# Head ends here
+def nextMove( x, y, pacman_x, pacman_y, food_x, food_y, grid):
+    return
+# Tail starts here
+pacman_x, pacman_y = [ int(i) for i in raw_input().strip().split() ]
+food_x, food_y = [ int(i) for i in raw_input().strip().split() ]
+x,y = [ int(i) for i in raw_input().strip().split() ]
+
+grid = []
+for i in xrange(0, x):
+    grid.append(raw_input().strip())
+
+nextMove(x, y, pacman_x, pacman_y, food_x, food_y, grid)
