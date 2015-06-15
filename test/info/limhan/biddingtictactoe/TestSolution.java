@@ -63,9 +63,78 @@ public class TestSolution {
 			
 			Solution solution = createSolution();
 			
-			int[] move = solution.findMove(solution.board);
+			int[] move = solution.findMove('X', solution.board);
 			
-			assertThat(move).isEqualTo(new int[] { 0,0 });
+			assertThat(move).isEqualTo(new int[] { 1,1 });
+			
+			System.setOut(original);
+		}
+		
+	}
+	
+	@Test
+	public void testFindMove2() throws Exception {
+		
+		try (PrintStream spyPs = Mockito.spy(System.out); PrintStream original = System.out) {
+			System.setOut(spyPs);
+			
+			Solution solution = createSolution();
+			
+			
+			char[] rowOne   = new char[] { 'O','_','_' };
+			char[] rowTwo   = new char[] { '_','X','_' };
+			char[] rowThree = new char[] { 'O','_','_' };
+			char[][] board = new char[][] { rowOne, rowTwo, rowThree };
+			
+			int[] move = solution.findMove('X', board);
+			
+			assertThat(move).isEqualTo(new int[] { 1,0 });
+			
+			System.setOut(original);
+		}
+		
+	}
+	
+	@Test
+	public void testFindMove3() throws Exception {
+		
+		try (PrintStream spyPs = Mockito.spy(System.out); PrintStream original = System.out) {
+			System.setOut(spyPs);
+			
+			Solution solution = createSolution();
+			
+			
+			char[] rowOne   = new char[] { '0','_','_' };
+			char[] rowTwo   = new char[] { '_','_','_' };
+			char[] rowThree = new char[] { 'X','_','0' };
+			char[][] board = new char[][] { rowOne, rowTwo, rowThree };
+			
+			int[] move = solution.findMove('X', board);
+			
+			assertThat(move).isEqualTo(new int[] { 1,1 });
+			
+			System.setOut(original);
+		}
+		
+	}
+	
+	@Test
+	public void testFindMove4() throws Exception {
+		
+		try (PrintStream spyPs = Mockito.spy(System.out); PrintStream original = System.out) {
+			System.setOut(spyPs);
+			
+			Solution solution = createSolution();
+			
+			
+			char[] rowOne   = new char[] { '0','_','X' };
+			char[] rowTwo   = new char[] { '_','_','_' };
+			char[] rowThree = new char[] { '0','_','X' };
+			char[][] board = new char[][] { rowOne, rowTwo, rowThree };
+			
+			int[] move = solution.findMove('X', board);
+			
+			assertThat(move).isEqualTo(new int[] { 1,2 });
 			
 			System.setOut(original);
 		}
@@ -81,7 +150,7 @@ public class TestSolution {
 			
 			solution.makeMove();
 			
-			Mockito.verify(spyPs, Mockito.times(1)).println("0 0");
+			Mockito.verify(spyPs, Mockito.times(1)).println("1 1");
 			
 			System.setOut(original);
 		}
@@ -95,15 +164,17 @@ public class TestSolution {
 		bids[0] = new int[] { 2, 0, 1 };
 		bids[1] = new int[] { 1, 2, 2 }; 
 		
-		assertThat(solution.currentBidsAvailable(bids)).isEqualTo(6);
+		assertThat(solution.currentBidsAvailable('X', bids)).isEqualTo(6);
+		assertThat(solution.currentBidsAvailable('O', bids)).isEqualTo(2);
 		
 		bids = new int[2][];
 		bids[0] = new int[] { 4, 0, 1 };
 		bids[1] = new int[] { 1, 1, 2 }; 
 		
-		assertThat(solution.currentBidsAvailable(bids)).isEqualTo(3);
+		assertThat(solution.currentBidsAvailable('X', bids)).isEqualTo(3);
+		assertThat(solution.currentBidsAvailable('O', bids)).isEqualTo(5);
 	}
-
+	
 	private Solution createSolution() {
 		int[][] bids = new int[2][2];
 		char[][] board = new char[3][3];
@@ -112,7 +183,7 @@ public class TestSolution {
 			Arrays.fill(board[i], '_');
 		}
 		
-		Solution solution = new Solution("X", "MOVE", bids, board);
+		Solution solution = new Solution('X', "PLAY", bids, board);
 		return solution;
 	}
 }
